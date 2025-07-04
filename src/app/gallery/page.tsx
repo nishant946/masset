@@ -1,6 +1,12 @@
+import {headers} from "next/headers";
+import {auth} from "@/lib/auth";
+import { redirect } from "next/dist/client/components/navigation";
 
-
-function GallaryPage() {
+ async function GalleryPage() {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+    if (session && session?.user?.role === 'admin') redirect('/');
     return (
         <div className="flex items-center justify-center h-screen bg-gray-100">
             <div className="bg-white p-8 rounded shadow-md w-96">
@@ -10,4 +16,4 @@ function GallaryPage() {
         </div>
     );
 }
-export default GallaryPage;
+export default GalleryPage;
