@@ -96,3 +96,27 @@ export async function getTotalUserCountAction() {
     return 0;
   }
 }
+export async function deleteCategoryAction(categoryId: number) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user || session.user.role !== 'admin') {
+    throw new Error('You must be an admin to delete');
+  }
+
+  try {
+    await db.delete(category).where(eq(category.id, categoryId));
+    revalidatePath("/admin/settings");
+    return {
+      success: true,
+      message: "Category deleted successfully"
+    };
+  } catch (error) {
+    console.error("Failed to delete category:", error);
+    return {
+      success: false,
+      message: "Failed to delete category"
+    };
+  }
+}

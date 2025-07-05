@@ -69,18 +69,27 @@ import { getAllCategoriesAction, getTotalUserCountAction } from "@/actions/admin
           </CardContent>
         </Card>
       </div>
-        <Card className="bg-white p-6 shadow-lg rounded-xl transition-transform hover-shadow-xl">
-            <CardHeader className="p-0 mb-4">
-            <CardTitle className="text-xl font-semibold text-gray-800">
-                Category Management
-            </CardTitle>
-            {/* <CardDescription className="text-gray-500">
-                Manage categories and subcategories.
-            </CardDescription> */}
-            </CardHeader>
-            <CardContent>
-              <CategoryManager categories={[]} />
-            </CardContent>
+        <Card className="bg-gradient-to-br from-white via-teal-50 to-teal-100 p-6 shadow-lg rounded-xl transition-transform hover:shadow-xl">
+          <CardHeader className="p-0 mb-4 flex flex-col items-start">
+            <div className="flex items-center mb-2">
+              <span className="inline-flex items-center justify-center rounded-full bg-teal-100 p-2 mr-3">
+          <File className="h-6 w-6 text-teal-600" />
+              </span>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+          Category Management
+              </CardTitle>
+            </div>
+            <CardDescription className="text-gray-500">
+              Manage categories and subcategories.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="mt-2">
+            <CategoryManager categories={
+              Array.isArray(categories)
+                ? categories
+                : categories?.categories ?? []
+            } />
+          </CardContent>
         </Card>
     </div>
   );
