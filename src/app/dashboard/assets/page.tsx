@@ -1,14 +1,28 @@
+import UploadAsset from "@/components/dashboard/upload-asset";
+import AssetGrid from "@/components/dashboard/asset-grid";
+import { getCategoriesAction} from "@/actions/dashboard-actions";
 
+async function UserAssetsPage() {
 
-function UserAssetsPage() {
+    const [categories] = await Promise.all([getCategoriesAction()]);
+
     return (
-        <div className="flex items-center justify-center h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded shadow-md w-96">
-                <h1 className="text-2xl font-bold text-center mb-4">User Assets Dashboard</h1>
-                <p className="text-gray-600 text-center mb-6">Manage your assets efficiently.</p>
-                {/* Add your assets management components here */}
+        <div className="container py-6">
+            <div className="flex items-center justify-between mb-6">
+                <h1 className="text-3xl font-bold">My Assets</h1>
+                <UploadAsset categories={categories?.map(cat => ({
+                    ...cat,
+                    id: cat.id.toString()
+                })) || []} />
             </div>
+            <AssetGrid />
         </div>
     );
 }
 export default UserAssetsPage;
+
+
+
+
+
+
