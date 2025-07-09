@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Upload } from "lucide-react";
+import { Plus, Upload, Image, FileText, Folder, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -22,11 +22,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import { uploadAssetAction } from "@/actions/dashboard-actions";
-import { toast } from "sonner";
-
-
-
-
 
 type Category = {
   id: string;
@@ -91,9 +86,12 @@ function UploadAsset({ categories }: UploadDialogProps) {
     return response.json();
   }
 
-
   const handleAssetUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!formState.title.trim() || !formState.categoryId || !formState.file) {
+      return;
+    }
+
     setIsUploading(true);
     setUploadProgressStatus(0);
     try {
@@ -129,12 +127,11 @@ function UploadAsset({ categories }: UploadDialogProps) {
       xhr.send(cloudinaryData);
       const cloudinaryResponse = await cloudinaryPromise;
       const formData = new FormData();
-             formData.append('title', formState.title);
-       formData.append('description', formState.description);
-       formData.append('categoryId', formState.categoryId);
-       formData.append('fileUrl', cloudinaryResponse.secure_url);
-       formData.append('thumbnailUrl', cloudinaryResponse.secure_url);
-      
+      formData.append('title', formState.title);
+      formData.append('description', formState.description);
+      formData.append('categoryId', formState.categoryId);
+      formData.append('fileUrl', cloudinaryResponse.secure_url);
+      formData.append('thumbnailUrl', cloudinaryResponse.secure_url);
 
       const result = await uploadAssetAction(formData);
       if(result.success) {
@@ -145,54 +142,62 @@ function UploadAsset({ categories }: UploadDialogProps) {
           categoryId: "",
           file: null,
         })
-        toast.success('Asset uploaded successfully');
-      } else {
-        toast.error('Failed to upload asset');
       }
     } catch (e) {
       console.error('Upload failed:', e);
-      toast.error('Failed to upload asset');
     } finally {
       setIsUploading(false);
       setUploadProgressStatus(0);
     } 
   };
 
-  
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-teal-600 hover:bg-teal-700 text-white shadow-md rounded-lg px-4 py-2">
+        <Button className="bg-teal-600 hover:bg-teal-700 text-white shadow-md rounded-lg px-6 py-2">
           <Plus className="w-4 h-4 mr-2" />
           Upload Asset
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[600px] bg-gradient-to-br from-white via-teal-50 to-teal-100 border border-teal-400 rounded-2xl p-6 shadow-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-teal-800 text-2xl font-semibold">
-            Upload New Asset
-          </DialogTitle>
+      <DialogContent className="sm:max-w-[600px] bg-white border-0 shadow-xl rounded-xl">
+        <DialogHeader className="pb-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+              <Upload className="w-5 h-5 text-teal-600" />
+            </div>
+            <div>
+              <DialogTitle className="text-2xl font-bold text-gray-900">
+                Upload New Asset
+              </DialogTitle>
+              <p className="text-gray-600 text-sm">
+                Share your digital assets with the community
+              </p>
+            </div>
+          </div>
         </DialogHeader>
 
-        <form onSubmit={handleAssetUpload} className="space-y-5">
+        <form onSubmit={handleAssetUpload} className="space-y-6">
+          {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-teal-800 font-medium">
-              Title
+            <Label htmlFor="title" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Asset Title *
             </Label>
             <Input
               id="title"
               name="title"
               value={formState.title}
               onChange={handleInputChange}
-              placeholder="Enter asset title"
-              className="rounded-md border-teal-300 focus:ring-teal-500 focus:border-teal-500"
+              placeholder="Enter a descriptive title..."
+              className="w-full"
+              required
             />
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-teal-800 font-medium">
+            <Label htmlFor="description" className="text-sm font-medium text-gray-700">
               Description
             </Label>
             <Textarea
@@ -200,14 +205,17 @@ function UploadAsset({ categories }: UploadDialogProps) {
               name="description"
               value={formState.description}
               onChange={handleInputChange}
-              placeholder="Write a short description..."
-              className="rounded-md border-teal-300 focus:ring-teal-500 focus:border-teal-500"
+              placeholder="Describe your asset..."
+              className="w-full resize-none"
+              rows={3}
             />
           </div>
 
+          {/* Category */}
           <div className="space-y-2">
-            <Label htmlFor="category" className="text-teal-800 font-medium">
-              Category
+            <Label htmlFor="category" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <Folder className="w-4 h-4" />
+              Category *
             </Label>
             <Select
               value={formState.categoryId}
@@ -215,8 +223,8 @@ function UploadAsset({ categories }: UploadDialogProps) {
                 setFormState({ ...formState, categoryId: value })
               }
             >
-              <SelectTrigger className="border-teal-300 focus:ring-teal-500 focus:border-teal-500 cursor-pointer">
-                <SelectValue placeholder="Select a category"/>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((category) => (
@@ -228,39 +236,86 @@ function UploadAsset({ categories }: UploadDialogProps) {
             </Select>
           </div>
 
+          {/* File Upload */}
           <div className="space-y-2">
-            <Label htmlFor="file" className="text-teal-800 font-medium">
-              File
+            <Label htmlFor="file" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <Image className="w-4 h-4" />
+              Asset File *
             </Label>
-            <Input
-              id="file"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="file:cursor-pointer border-teal-300 file:bg-teal-500 file:text-white file:px-4 file:rounded-md  hover:file:bg-teal-700"
-            />
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-teal-400 transition-colors">
+              <Input
+                id="file"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                required
+              />
+              <label htmlFor="file" className="cursor-pointer">
+                <div className="space-y-2">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                    <Image className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">
+                      {formState.file ? formState.file.name : "Click to upload image"}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, GIF up to 10MB
+                    </p>
+                  </div>
+                </div>
+              </label>
+            </div>
             {formState.file && (
-              <p className="text-sm text-teal-700">
+              <p className="text-sm text-teal-600 flex items-center gap-1">
+                <Image className="w-4 h-4" />
                 Selected: {formState.file.name}
               </p>
             )}
           </div>
 
+          {/* Upload Progress */}
           {isUploading && uploadProgressStatus > 0 && (
-            <div className="flex items-center space-x-2">
-              <div className="w-full bg-teal-200 rounded-full h-2.5">
-                <div className="bg-teal-600 h-2.5 rounded-full" style={{width: `${uploadProgressStatus}%`}}></div>
-                <p className="text-teal-700 text-sm">Uploading...</p>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Uploading...</span>
+                <span className="text-teal-600 font-medium">{uploadProgressStatus}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-teal-600 h-2 rounded-full transition-all duration-300" 
+                  style={{width: `${uploadProgressStatus}%`}}
+                ></div>
               </div>
             </div>
           )}
-          <DialogFooter>
+
+          <DialogFooter className="pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isUploading}
+            >
+              Cancel
+            </Button>
             <Button
               type="submit"
-              className="bg-teal-600 cursor-pointer hover:bg-teal-700 text-white rounded-lg px-6 py-2 shadow-md"
+              className="bg-teal-600 hover:bg-teal-700 text-white px-6"
+              disabled={isUploading || !formState.title.trim() || !formState.categoryId || !formState.file}
             >
-              <Upload className="w-4 h-4 mr-2" />
-              Upload Asset
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Asset
+                </>
+              )}
             </Button>
           </DialogFooter>
         </form>

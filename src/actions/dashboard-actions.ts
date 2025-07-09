@@ -106,3 +106,79 @@ export async function getAssetByIdAction(assetId: string) {
         return null;
     }
 }
+
+export async function deleteAssetAction(assetId: string) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+    
+    if (!session?.user) {
+        throw new Error('You must be logged in to delete an asset');
+    }
+
+    try {
+        // Check if user owns the asset
+        const [existingAsset] = await db.select().from(asset).where(eq(asset.id, assetId));
+        
+        if (!existingAsset) {
+            throw new Error('Asset not found');
+        }
+
+        if (existingAsset.userId !== session.user.id) {
+            throw new Error('You can only delete your own assets');
+        }
+
+        await db.delete(asset).where(eq(asset.id, assetId));
+        revalidatePath('/dashboard/assets');
+        return { success: true, message: 'Asset deleted successfully' };
+    } catch (e) {
+        console.error('Error deleting asset:', e);
+        return { success: false, error: 'Failed to delete asset' };
+    }
+}
+
+export async function updateAssetAction(assetId: string, formData: FormData) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+    
+    if (!session?.user) {
+        throw new Error('You must be logged in to update an asset');
+    }
+
+    try {
+        // Check if user owns the asset
+        const [existingAsset] = await db.select().from(asset).where(eq(asset.id, assetId));
+        
+        if (!existingAsset) {
+            throw new Error('Asset not found');
+        }
+
+        if (existingAsset.userId !== session.user.id) {
+            throw new Error('You can only update your own assets');
+        }
+
+        const validatedFields = AssetSchema.parse({
+            title: formData.get('title'),
+            description: formData.get('description'),
+            categoryId: Number(formData.get('categoryId')),
+            fileUrl: formData.get('fileUrl'),
+            thumbnailUrl: formData.get('thumbnailUrl') || formData.get('fileUrl'),
+        });
+
+        await db.update(asset).set({
+            title: validatedFields.title,
+            description: validatedFields.description,
+            categoryId: validatedFields.categoryId,
+            fileUrl: validatedFields.fileUrl,
+            thumbnailUrl: validatedFields.thumbnailUrl,
+            updatedAt: new Date(),
+        }).where(eq(asset.id, assetId));
+
+        revalidatePath('/dashboard/assets');
+        return { success: true, message: 'Asset updated successfully' };
+    } catch (e) {
+        console.error('Error updating asset:', e);
+        return { success: false, error: 'Failed to update asset' };
+    }
+}

@@ -1,7 +1,7 @@
 // app/login/page.tsx
 import { LoginForm } from "./loginForm";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package } from "lucide-react";
+import { Package, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -14,27 +14,53 @@ async function LoginPage() {
     if (session) redirect('/');
 
     return (
-        <div className="flex items-center justify-center h-screen bg-gray-100">
-            <Card className="bg-white p-8 rounded shadow-md w-96">
-                <CardHeader className="w-full max-w-md">
-                    <div className="mx-auto p-2 rounded-full bg-teal-500 w-fit">
-                        <Package className="h-6 w-6 text-white" />
-                    </div>
-                    <CardTitle className="text-center text-2xl font-bold mt-4">
-                        Welcome Back
-                    </CardTitle>
-                    <CardDescription className="text-center text-gray-600 mt-2">
-                        Sign in to your account
-                    </CardDescription>
-                </CardHeader>
-                <LoginForm /> {/* Replaced CardContent with LoginForm */}
-                <CardFooter className="text-center flex justify-center mt-4">
-                    <p className="text-sm flex justify-center text-gray-500">
-                        <Link href="/" className="text-teal-500 hover:underline">Back to home</Link>
+        <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-50 flex items-center justify-center p-4">
+            <div className="w-full max-w-md">
+                {/* Back to Home Link */}
+                <div className="mb-8">
+                    <Link 
+                        href="/" 
+                        className="inline-flex items-center gap-2 text-teal-600 hover:text-teal-700 transition-colors"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Home
+                    </Link>
+                </div>
+
+                <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+                    <CardHeader className="text-center pb-6">
+                        <div className="mx-auto w-16 h-16 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
+                            <Package className="h-8 w-8 text-white" />
+                        </div>
+                        <CardTitle className="text-3xl font-bold text-gray-900">
+                            Welcome Back
+                        </CardTitle>
+                        <CardDescription className="text-lg text-gray-600 mt-2">
+                            Sign in to access your digital assets
+                        </CardDescription>
+                    </CardHeader>
+                    
+                    <LoginForm />
+                    
+                    <CardFooter className="text-center flex justify-center pt-6">
+                        <p className="text-sm text-gray-500">
+                            New to mAsset?{' '}
+                            <Link href="/" className="text-teal-600 hover:text-teal-700 font-medium">
+                                Explore our gallery
+                            </Link>
+                        </p>
+                    </CardFooter>
+                </Card>
+
+                {/* Additional Info */}
+                <div className="mt-8 text-center">
+                    <p className="text-sm text-gray-500">
+                        Secure authentication powered by Google
                     </p>
-                </CardFooter>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }
+
 export default LoginPage;
