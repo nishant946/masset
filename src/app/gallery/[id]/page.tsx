@@ -16,16 +16,22 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { createPaypalOrderAction } from "@/actions/payment-action";
+import { createPaypalOrderAction, hasUserPurchasedAssetAction } from "@/actions/payment-action";
 
 interface GallaryDetailsPageProps {
   params: {
     id: string;
   };
+  searchParams: {
+    success?: string;
+    error?: string;
+    cancelled?: string;
+  };
 }
 
 export default function GallaryDetailsPage({
   params,
+  searchParams,
 }: GallaryDetailsPageProps) {
   return (
     <Suspense
@@ -35,7 +41,7 @@ export default function GallaryDetailsPage({
         </div>
       }
     >
-      <GallaryContent params={params} />
+      <GallaryContent params={params} searchParams={searchParams} />
     </Suspense>
   );
 }
@@ -55,7 +61,9 @@ async function GallaryContent({ params }: GallaryDetailsPageProps) {
       .map((n) => n[0])
       .join("")
       .toUpperCase() || "U";
-  const hasPurchased = false;
+
+  const hasPurchased = session?.user ? await hasUserPurchasedAssetAction(params?.id) : false;
+  
 
   async function handlePurchase() {
     "use server";

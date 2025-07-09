@@ -1,49 +1,49 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Package } from "lucide-react";
-import { signOut, useSession } from "../../lib/auth-client";
-import { Button } from "../ui/button";
-import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import { Package, User, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
-  DropdownMenuTrigger,
+  DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuItem,
-} from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSession, signOut } from "@/lib/auth-client";
 
 function Header() {
-  const router = useRouter();
   const pathname = usePathname();
-  const isLogin: boolean = pathname === "/login";
-  if (isLogin) {
-    return null; // Don't render the header on the login page
-  }
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const isPending = status === "loading";
 
-  const { data: session, isPending } = useSession();
-  const user = session?.user;
-  const isAdminuser = user?.role === "admin";
-
-  const handleLogout = async () => {
-    await signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/");
-        },
-      },
-    });
-  };
-
-  const getLinkClass = (href: string) => {
-    const isActive = pathname === href || pathname.startsWith(href + "/");
-    return `text-sm font-medium transition-colors px-2 py-1 rounded-md ${
-      isActive
-        ? "text-teal-600 font-semibold bg-teal-50"
-        : "text-gray-700 hover:text-teal-600 hover:bg-teal-50"
+  const getLinkClass = (path: string) => {
+    return `text-sm font-medium transition-colors hover:text-teal-600 ${
+      pathname === path ? "text-teal-600" : "text-gray-600"
     }`;
   };
+
+  const isAdminuser = session?.user?.role === "admin";
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      // Redirect to home page after successful logout
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback redirect
+      router.push("/");
+    }
+  };
+
+  const userInitials = session?.user?.name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase() || "U";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white shadow-sm">
@@ -57,19 +57,21 @@ function Header() {
           </Link>
 
           <nav className="flex items-center gap-4 ml-6">
-            {!isPending && user && isAdminuser ? null : (
+            {/* Show Gallery for everyone except admins on admin pages */}
+            {!isPending && session?.user && isAdminuser ? null : (
               <Link href="/gallery" className={getLinkClass("/gallery")}>
                 Gallery
               </Link>
             )}
 
-            {!isPending && user && !isAdminuser && (
+            {/* Regular user navigation */}
+            {!isPending && session?.user && !isAdminuser && (
               <>
                 <Link
                   href="/dashboard/assets"
                   className={getLinkClass("/dashboard/assets")}
                 >
-                  Assets
+                  My Assets
                 </Link>
                 <Link
                   href="/dashboard/purchases"
@@ -77,10 +79,17 @@ function Header() {
                 >
                   My Purchases
                 </Link>
+                <Link
+                  href="/dashboard/profile"
+                  className={getLinkClass("/dashboard/profile")}
+                >
+                  Profile
+                </Link>
               </>
             )}
 
-            {!isPending && user && isAdminuser && (
+            {/* Admin navigation */}
+            {!isPending && session?.user && isAdminuser && (
               <>
                 <Link
                   href="/admin/asset-approval"
@@ -99,47 +108,54 @@ function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center">
-          {isPending ? null : user ? (
-            <div className="flex items-center gap-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant={"ghost"}
-                    className="relative h-8 w-8 rounded-full"
-                  >
-                    <Avatar className="h-8 w-8 border border-slate-300">
-                      <AvatarFallback className="bg-teal-500 text-white">
-                        {user?.name?.charAt(0).toUpperCase() || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {user?.name}
+        <div className="flex items-center gap-4">
+          {!isPending && session?.user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={session.user.image || ""} alt={session.user.name || ""} />
+                    <AvatarFallback>{userInitials}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <div className="flex items-center justify-start gap-2 p-2">
+                  <div className="flex flex-col space-y-1 leading-none">
+                    {session.user.name && (
+                      <p className="font-medium">{session.user.name}</p>
+                    )}
+                    {session.user.email && (
+                      <p className="w-[200px] truncate text-sm text-muted-foreground">
+                        {session.user.email}
                       </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="cursor-pointer text-red-500"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span className="font-medium">Logout</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-                <DropdownMenuSeparator />
-              </DropdownMenu>
-            </div>
+                    )}
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {session.user.role || "user"}
+                    </p>
+                  </div>
+                </div>
+                <DropdownMenuItem asChild>
+                  <Link href={isAdminuser ? "/admin/settings" : "/dashboard/profile"} className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>{isAdminuser ? "Admin Panel" : "Profile"}</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer text-red-600 focus:text-red-600"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <Link href="/login">
-              <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-                Login
+            <div className="flex items-center gap-2">
+              <Button asChild variant="ghost">
+                <Link href="/login">Sign in</Link>
               </Button>
-            </Link>
+            </div>
           )}
         </div>
       </div>
