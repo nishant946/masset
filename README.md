@@ -233,7 +233,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-For support, email support@masset.com or create an issue in the repository.
+For support, email : nishantkumarsingh946@gmail.com or create an issue in the repository.
 
 ## 🔮 Roadmap
 
