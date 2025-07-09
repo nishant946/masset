@@ -15,6 +15,13 @@
       "when": 1751615064333,
       "tag": "0001_bizarre_swarm",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1752034485594,
+      "tag": "0002_hot_flatman",
+      "breakpoints": true
     }
   ]
 }

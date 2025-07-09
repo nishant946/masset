@@ -8,13 +8,14 @@ import {
 import { User, Users } from "lucide-react";
 import CategoryManager from "@/components/admin/category-manager";
 import { File } from "lucide-react";
-import { getAllCategoriesAction, getTotalUserCountAction } from "@/actions/admin-actions";
+import { getAllCategoriesAction, getTotalAssetsCountAction, getTotalUserCountAction } from "@/actions/admin-actions";
 
  async function SettingsPage() {
 
-  const [categories , userCount] = await Promise.all([
+  const [categories , userCount , assetsCount] = await Promise.all([
     getAllCategoriesAction(),
-    getTotalUserCountAction()
+    getTotalUserCountAction(),
+    getTotalAssetsCountAction()
   ])
 
   return (
@@ -62,9 +63,7 @@ import { getAllCategoriesAction, getTotalUserCountAction } from "@/actions/admin
           </CardHeader>
           <CardContent className="flex items-end justify-between mt-2">
             <p className="text-4xl font-extrabold text-teal-700">
-              {Array.isArray(categories)
-                ? categories.length
-                : categories?.categories?.length ?? 0}
+                  {assetsCount}
             </p>
           </CardContent>
         </Card>
