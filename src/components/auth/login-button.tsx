@@ -5,7 +5,6 @@ import {Button} from "@/components/ui/button";
 function LoginButton() {
 
     const handleLogin = async () => {
-        console.log("DATABASE_URL:", process.env.DATABASE_URL);
         await signIn.social({
             provider: 'google',
             callbackURL:"/",
