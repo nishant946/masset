@@ -44,6 +44,29 @@ A modern, full-featured digital asset management platform built with Next.js, Ty
 - **PayPal** - Payment processing and order management
 - **Google OAuth** - User authentication
 
+  #### 🧠 Graph Database – NeoDB (Neo4j)
+
+Masset uses **NeoDB (Neo4j)** as a graph database to efficiently manage relationships between users, assets, and categories.
+
+### 🔍 Why NeoDB?
+Traditional relational databases struggle with deeply connected data. By leveraging NeoDB’s graph-based approach, Masset can:
+
+- Track asset ownership history across users.
+- Model complex category-subcategory relationships.
+- Build recommendation systems based on asset interaction graphs.
+
+### 📊 Example Use-Cases:
+- Quickly fetch all assets uploaded by users in a specific category.
+- Determine most active asset contributors within a subgraph.
+- Visualize data relationships in a dashboard (future feature).
+
+### 🛠️ NeoDB Integration:
+- Connected using the official Neo4j JavaScript driver.
+- Querying done via Cypher queries inside the backend service.
+- Environment variable: `NEODB_URI`, `NEODB_USERNAME`, `NEODB_PASSWORD`.
+
+
+
 ## 📁 Project Structure
 
 ```
