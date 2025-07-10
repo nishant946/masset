@@ -24,7 +24,7 @@ async function AssetApprovalPage() {
   // getPendingAssetsAction returns asset.createdAt as Date, but PendingAsset expects string
   const rawPendingAssets = await getPendingAssetsAction();
   const pendingAssets: PendingAsset[] = rawPendingAssets.map(
-    ({ asset, userName }: { asset: any; userName: string | null }) => ({
+    ({ asset, userName }: { asset: Omit<Asset, 'createdAt'> & { createdAt: Date }; userName: string | null }) => ({
       asset: {
         ...asset,
         createdAt: typeof asset.createdAt === "string" ? asset.createdAt : asset.createdAt.toISOString(),

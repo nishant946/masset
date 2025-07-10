@@ -111,7 +111,9 @@ async function UserAssetsPage() {
           <AssetGrid 
             assets={assets.map(asset => ({
               ...asset,
-              isApproved: asset.isApproved as "approved" | "rejected" | "pending"
+              isApproved: asset.isApproved as "approved" | "rejected" | "pending",
+              categoryId: asset.categoryId !== undefined && asset.categoryId !== null ? asset.categoryId.toString() : null,
+              createdAt: typeof asset.createdAt === "string" ? asset.createdAt : asset.createdAt?.toISOString?.() ?? "",
             }))} 
             categories={categories?.map((cat) => ({
               ...cat,

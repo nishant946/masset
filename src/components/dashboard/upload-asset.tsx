@@ -111,7 +111,8 @@ function UploadAsset({ categories }: UploadDialogProps) {
           setUploadProgressStatus(progress);
         }
       }
-      const cloudinaryPromise = new Promise<any>((resolve, reject) => {
+      type CloudinaryResponse = { secure_url: string };
+      const cloudinaryPromise = new Promise<CloudinaryResponse>((resolve, reject) => {
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
             const response = JSON.parse(xhr.responseText);

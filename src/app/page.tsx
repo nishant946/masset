@@ -1,17 +1,14 @@
-import Image from "next/image";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   Package, 
-  Users, 
   Shield, 
   Download, 
   Upload, 
   Search, 
-  Star,
   ArrowRight,
-  CheckCircle
 } from "lucide-react";
 
 export default function Home() {

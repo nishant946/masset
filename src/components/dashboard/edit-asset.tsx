@@ -72,7 +72,7 @@ function EditAsset({ asset, categories }: EditAssetProps) {
       formData.append("description", formState.description);
       formData.append("categoryId", formState.categoryId);
 
-      const result = await updateAssetAction(formData);
+      const result = await updateAssetAction(asset.id, formData);
       if (result.success) {
         setOpen(false);
       }

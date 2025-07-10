@@ -16,8 +16,7 @@ import { useSession, signOut } from "@/lib/auth-client";
 function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session, status } = useSession();
-  const isPending = status === "loading";
+  const { data: session, isPending } = useSession();
 
   const getLinkClass = (path: string) => {
     return `text-sm font-medium transition-colors hover:text-teal-600 ${

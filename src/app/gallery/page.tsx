@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 
 interface GalleryPageProps {
   searchParams: {
@@ -92,10 +93,10 @@ async function GalleryContent({ searchParams }: GalleryPageProps) {
                   asChild
                   className="h-12"
                 >
-                  <a href="/gallery">
+                  <Link href="/gallery">
                     <X className="w-4 h-4 mr-2" />
                     Clear
-                  </a>
+                  </Link>
                 </Button>
               )}
             </form>
@@ -106,9 +107,9 @@ async function GalleryContent({ searchParams }: GalleryPageProps) {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
           <div>
             <p className="text-gray-600 text-lg">
-              Showing <span className="font-semibold text-teal-600">{filteredAssets.length}</span> asset{filteredAssets.length !== 1 ? 's' : ''}
+              Showing <span className="font-semibold text-teal-600">{filteredAssets.length}</span> asset{filteredAssets.length !== 1 ? "s" : ""}
               {searchParams.search && (
-                <span> for "<span className="font-semibold">{searchParams.search}</span>"</span>
+                <span> for &quot;<span className="font-semibold">{searchParams.search}</span>&quot;</span>
               )}
               {searchParams.category && searchParams.category !== "all" && (
                 <span> in <span className="font-semibold">{categories?.find(c => c.id.toString() === searchParams.category)?.name}</span></span>
@@ -133,8 +134,14 @@ async function GalleryContent({ searchParams }: GalleryPageProps) {
           <AssetGrid 
             assets={filteredAssets.map(item => ({
               ...item.asset,
-              isApproved: item.asset.isApproved as "approved" | "rejected" | "pending"
-            }))} 
+              isApproved: item.asset.isApproved as "approved" | "rejected" | "pending",
+              categoryId: item.asset.categoryId?.toString() ?? null,
+              createdAt: typeof item.asset.createdAt === "string" ? item.asset.createdAt : item.asset.createdAt.toISOString(),
+            }))}
+            categories={categories.map(category => ({
+              ...category,
+              id: category.id.toString(),
+            }))}
           />
         ) : (
           <Card className="bg-white shadow-md rounded-xl border">
@@ -154,7 +161,7 @@ async function GalleryContent({ searchParams }: GalleryPageProps) {
                 </p>
                 {(searchParams.search || searchParams.category) && (
                   <Button asChild className="bg-teal-600 hover:bg-teal-700">
-                    <a href="/gallery">View All Assets</a>
+                    <Link href="/gallery">View Assets</Link>
                   </Button>
                 )}
               </div>
@@ -175,7 +182,8 @@ async function GalleryContent({ searchParams }: GalleryPageProps) {
   );
 }
 
-export default function GalleryPage({ searchParams }: GalleryPageProps) {
+export default async function GalleryPage({ searchParams }: { searchParams: Promise<{ search?: string; category?: string }> }) {
+  const sp = await searchParams;
   return (
     <Suspense
       fallback={
@@ -184,7 +192,7 @@ export default function GalleryPage({ searchParams }: GalleryPageProps) {
         </div>
       }
     >
-      <GalleryContent searchParams={searchParams} />
+      <GalleryContent searchParams={sp} />
     </Suspense>
   );
 }

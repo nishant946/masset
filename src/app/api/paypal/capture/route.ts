@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { asset } from "@/lib/db/schema";

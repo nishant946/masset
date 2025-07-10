@@ -69,7 +69,8 @@ export async function createPaypalOrderAction(assetId: string) {
         console.log("PayPal order response:", JSON.stringify(data, null, 2));
 
         if(data.id) {
-            const approvalLink = data.links?.find((link: any) => link.rel === "approve")?.href;
+            type PaypalLink = { href: string; rel: string; method?: string };
+            const approvalLink = data.links?.find((link: PaypalLink) => link.rel === "approve")?.href;
             if (approvalLink) {
                 return {
                     orderId : data.id,

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         );
         return NextResponse.json({signature ,timestamp , api_key: process.env.CLOUDINARY_API_KEY});
     } catch (e) {
-        console.error('error while generating cloudinary signature');
+        console.error('error while generating cloudinary signature',e);
         return NextResponse.json({error: 'Failed to generate signature'}, {status: 500});
     }
 }

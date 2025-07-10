@@ -1,6 +1,5 @@
 import {
   Badge,
-  DollarSign,
   Download,
   Info,
   Loader2,
@@ -29,10 +28,15 @@ interface GallaryDetailsPageProps {
   };
 }
 
-export default function GallaryDetailsPage({
+export default async function GallaryDetailsPage({
   params,
   searchParams,
-}: GallaryDetailsPageProps) {
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ success?: string; error?: string; cancelled?: string }>;
+}) {
+  const { id } = await params;
+  const sp = await searchParams;
   return (
     <Suspense
       fallback={
@@ -41,7 +45,7 @@ export default function GallaryDetailsPage({
         </div>
       }
     >
-      <GallaryContent params={params} searchParams={searchParams} />
+      <GallaryContent params={{ id }} searchParams={sp} />
     </Suspense>
   );
 }

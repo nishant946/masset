@@ -8,7 +8,6 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm/relations";
-import { title } from "process";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -131,17 +130,6 @@ export const categoryRelations = relations(category, ({many}) => ({
   assets: many(asset),
 }));
 
-const assetRelations = relations(asset, ({one , many}) => ({
-  user: one(user, {
-	fields: [asset.userId],
-	references: [user.id],
-  }),
-  category: one(category, {
-	fields: [asset.categoryId],
-	references: [category.id],
-  }),
-  purchases: many(purchase),
-}));
 
 export const payment = pgTable("payment", {
   id : uuid("id").primaryKey(),

@@ -2,11 +2,12 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAllUserPurchasesAssetAction } from "@/actions/payment-action";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileImage, Calendar, User, ShoppingBag, DollarSign } from "lucide-react";
+import { Download, FileImage, Calendar, ShoppingBag, DollarSign } from "lucide-react";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 async function UserPurchasesPage() {
     const session = await auth.api.getSession({
@@ -130,10 +131,14 @@ async function UserPurchasesPage() {
                                 No purchases yet
                             </h3>
                             <p className="text-gray-500 text-center max-w-md mb-6">
-                                You haven't purchased any assets yet. Browse our gallery to find amazing digital assets to add to your collection.
+                                You have not purchased any assets yet. Browse our gallery to find amazing digital assets to add to your collection.
                             </p>
                             <Button asChild className="bg-teal-600 hover:bg-teal-700">
-                                <a href="/gallery">Browse Gallery</a>
+                                <Link href="/gallery">
+                                    <a className="w-full text-white transition-colors hover:text-teal-700">
+                                        Browse Gallery
+                                    </a>
+                                </Link>
                             </Button>
                         </CardContent>
                     </Card>

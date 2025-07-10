@@ -2,7 +2,6 @@
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { asset, category, user } from '@/lib/db/schema';
-import { count, log } from 'console';
 import { sql } from 'drizzle-orm';
 import { eq } from 'drizzle-orm/sql/expressions/conditions';
 import { revalidatePath } from 'next/cache';

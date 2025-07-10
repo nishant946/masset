@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Edit, Trash2, Eye } from "lucide-react";
+import { MoreVertical,  Trash2, Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { deleteAssetAction } from "@/actions/dashboard-actions";
@@ -54,13 +54,6 @@ function AssetGrid({ assets, categories, showActions = false }: AssetGridProps) 
     }
   };
 
-  const handleAssetUpdate = (updatedAsset: Asset) => {
-    setLocalAssets(
-      localAssets.map((asset) =>
-        asset.id === updatedAsset.id ? updatedAsset : asset
-      )
-    );
-  };
 
   if (localAssets.length === 0) {
     return (
